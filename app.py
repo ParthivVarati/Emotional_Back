@@ -42,23 +42,19 @@ def save_history(bot_id, history):
 def process_message(bot_id, user_message):
     history = get_history(bot_id)
 
-    # Add new user message to history
     history.append({"role": "user", "content": user_message})
     save_history(bot_id, history)
 
-    # Format full conversation for LLM
     formatted_history = ""
     for msg in history:
         role = "User" if msg["role"] == "user" else "Assistant"
         formatted_history += f"{role}: {msg['content']}\n"
 
-    # Select persona
     if bot_id == "tom":
         chain = get_tom_chain(GEMINI_API_KEY)
     else:
         chain = get_jerry_chain(GEMINI_API_KEY)
 
-    # Final input with full context
     final_input = f"""
 Continue the conversation below in your assigned persona.
 Do NOT repeat your intro every time. Respond naturally.
@@ -69,7 +65,6 @@ Do NOT repeat your intro every time. Respond naturally.
     result = chain.invoke({"input": final_input})
     reply = result.content if hasattr(result, "content") else str(result)
 
-    # Save bot reply
     history.append({"role": "bot", "content": reply})
     save_history(bot_id, history)
 
@@ -79,6 +74,11 @@ Do NOT repeat your intro every time. Respond naturally.
 # -------------------------------
 # API Endpoints
 # -------------------------------
+
+@app.route("/")
+def home():
+    return jsonify({"status": "ok", "message": "My Feelings Buddy API is running"})
+
 
 @app.route("/chat/tom", methods=["POST"])
 def chat_tom():
@@ -101,5 +101,5 @@ def chat_jerry():
 # -------------------------------
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
