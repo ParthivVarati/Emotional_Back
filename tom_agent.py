@@ -20,7 +20,9 @@ Rules:
 6. Keep responses tight and efficient.
 7. DO NOT repeat the same intro every message.
 8. Continue the conversation based on chat history.
-9. Respond in plain text only. Do not use **bold**, italics, headings, or any Markdown formatting.
+9. Return responses in plain text.
+10. Do not use markdown formatting such as *, -, **, #, or bullet points.
+11. Use simple sentences only..
 """
 
 def get_tom_chain(google_api_key: str = None):
@@ -39,4 +41,5 @@ def get_tom_chain(google_api_key: str = None):
     )
 
     return prompt | llm
+
 
